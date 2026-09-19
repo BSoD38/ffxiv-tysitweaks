@@ -6,10 +6,7 @@ using KamiToolKit.Nodes;
 
 namespace TysiTweaks.Ui;
 
-/// <summary>
-/// Settings window for a single tweak. Nodes are destroyed when the window closes,
-/// so <see cref="BuildNodes"/> is called fresh on every open.
-/// </summary>
+// Nodes are destroyed when the window closes, so BuildNodes runs fresh on every open.
 public class TweakConfigWindow : NativeAddon {
     public required Func<IEnumerable<NodeBase>> BuildNodes { get; init; }
 

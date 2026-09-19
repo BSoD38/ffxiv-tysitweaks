@@ -18,15 +18,8 @@ using CabinetSheet = Lumina.Excel.Sheets.Cabinet;
 
 namespace TysiTweaks.Tweaks;
 
-/// <summary>
-/// Marks the armoire entries whose item a gear set still needs, and blocks the store itself so the
-/// context menu and any other route are covered too.
-/// </summary>
-/// <remarks>
-/// Marking is done by opacity or by dropping the entry from the list, never by the list disabled state
-/// and never by hiding a node. A row forwards the mouse wheel to its list through its own collision
-/// node, so anything that stops the row taking events also stops the list scrolling over it.
-/// </remarks>
+// Never disable or hide a row: it forwards the mouse wheel to its list through its own collision node,
+// so anything that stops the row taking events also stops the list scrolling over it.
 public class ProtectGearSets : Tweak {
     public override string DisplayName => "Protect Gear Sets from the Armoire";
 
@@ -36,22 +29,21 @@ public class ProtectGearSets : Tweak {
 
     private const string AddonName = "Cabinet";
 
-    /// <summary>Gear sets store a high quality item as its id plus this.</summary>
+    // Gear sets store a high quality item as its id plus this.
     private const uint HighQualityOffset = 1_000_000;
 
-    /// <summary>AgentCabinet opens in mode 2 to pick an armoire item for a glamour plate, which stores nothing.</summary>
+    // AgentCabinet also opens in mode 2, to pick an armoire item for a glamour plate, which stores nothing.
     private const uint StoreMode = 0;
 
-    /// <summary>Number array the addon keeps its populated slot count in, per AddonCabinet.</summary>
+    // Number array the addon keeps its populated slot count in, per AddonCabinet.
     private const int SlotCountArray = 0x30;
 
-    /// <summary>Opacity of a faded row. Lower is a stronger warning, 255 is untouched.</summary>
     private const byte DimmedAlpha = 90;
 
     private readonly HashSet<uint> gearsetItems = [];
 
-    /// <summary>Opacity a row had before it was faded. Renderers are recycled as the list scrolls, so
-    /// the original has to be put back rather than assumed to be fully opaque.</summary>
+    // Renderers are recycled as the list scrolls, so a row's original opacity has to be put back rather
+    // than assumed to be fully opaque.
     private readonly Dictionary<nint, byte> fadedRows = [];
 
     private ProtectGearSetsConfig? config;
@@ -140,7 +132,7 @@ public class ProtectGearSets : Tweak {
     private unsafe void OnCabinetUpdate(AddonEvent type, AddonArgs args)
         => Paint((AddonCabinet*)args.Addon.Address, protect: true);
 
-    /// <summary>The renderers die with the addon, so the recorded nodes would be stale pointers.</summary>
+    // The renderers die with the addon, so the recorded nodes would be stale pointers.
     private void OnCabinetFinalize(AddonEvent type, AddonArgs args) => fadedRows.Clear();
 
     private unsafe void Paint(AddonCabinet* addon, bool protect) {
@@ -163,11 +155,8 @@ public class ProtectGearSets : Tweak {
         if (drop) Drop(list, slots);
     }
 
-    /// <summary>
-    /// Closes the gaps by moving the kept slots down over the protected ones and shrinking the list to
-    /// match, so the entries are gone rather than blank. The row contents and the click that picks an
-    /// item to store both read these same slots, so they stay in agreement.
-    /// </summary>
+    // The row contents and the click that picks an item to store both read these slots, so compacting
+    // them in place keeps the two in agreement.
     private unsafe void Drop(AtkComponentList* list, Span<AddonCabinet.ItemSlot> slots) {
         var count = Math.Min(list->ListLength, slots.Length);
         var kept = 0;
@@ -187,7 +176,7 @@ public class ProtectGearSets : Tweak {
         list->SetItemCount((short)kept);
     }
 
-    /// <summary>The name owns its buffer, so it is copied through the string itself rather than moved.</summary>
+    // The name owns its buffer, so it is copied through the string itself rather than moved.
     private static unsafe void CopySlot(ref AddonCabinet.ItemSlot from, ref AddonCabinet.ItemSlot to) {
         to.Name.SetString(from.Name.StringPtr);
         to.Unk68 = from.Unk68;
@@ -197,7 +186,6 @@ public class ProtectGearSets : Tweak {
         to.ConditionNormalized = from.ConditionNormalized;
     }
 
-    /// <summary>Makes the agent rebuild the full item list, undoing a compaction.</summary>
     private static unsafe void RequestListRebuild() {
         var agent = AgentCabinet.Instance();
         if (agent is not null) agent->PendingUpdate = true;

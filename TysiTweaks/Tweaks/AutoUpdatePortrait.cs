@@ -16,10 +16,6 @@ using AgentId = Dalamud.Game.Agent.AgentId;
 
 namespace TysiTweaks.Tweaks;
 
-/// <summary>
-/// Sends the portrait update itself when a gear set is updated, re-applying a linked glamour plate first,
-/// and keeps the game's confirmation preview from opening at all.
-/// </summary>
 public class AutoUpdatePortrait : Tweak {
     public override string DisplayName => "Auto-Update Portraits";
 
@@ -27,33 +23,24 @@ public class AutoUpdatePortrait : Tweak {
         "Updates the portrait linked to a gear set when you update that gear set, without the confirmation window.\n" +
         "A linked glamour plate is applied to your character first (cities and sanctuaries only).";
 
-    /// <summary>Keeps the plate and the portrait from landing in the same instant as the gear set update.</summary>
+    // Keeps the plate and the portrait from landing in the same instant as the gear set update.
     private static readonly TimeSpan HumanDelay = TimeSpan.FromMilliseconds(500.0);
 
-    /// <summary>
-    /// How long the equipped gear has to stop changing before it counts as the final look.
-    /// A glamour plate lands piece by piece, so the checksum moves several times on the way.
-    /// </summary>
+    // A glamour plate lands piece by piece, so the checksum moves several times before the look is final.
     private static readonly TimeSpan SettleTime = TimeSpan.FromMilliseconds(400.0);
 
-    /// <summary>Past this, the game's own preview is opened for the player instead.</summary>
     private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(10.0);
 
-    /// <summary>The preview is kept from opening for this long after the portrait is sent, since the
-    /// update itself is another gear change the game would offer a preview for.</summary>
+    // The portrait update is itself another gear change the game would offer a preview for.
     private static readonly TimeSpan SuppressAfterSend = TimeSpan.FromSeconds(5.0);
 
     private enum Result { Updated, NotNeeded, NotReady, Failed }
 
-    /// <summary>LogMessage row for "Portrait set as instant portrait."</summary>
+    // LogMessage row for "Portrait set as instant portrait."
     private const uint InstantPortraitNotice = 5865;
 
     private Hook<RaptureGearsetModule.Delegates.UpdateGearset>? updateGearsetHook;
-
-    /// <summary>Audits every portrait update leaving the client, including any the game sends itself.</summary>
     private Hook<BannerHelper.Delegates.SendBannerData>? sendBannerDataHook;
-
-    /// <summary>Cancels a plate re-equip that is still queued when the tweak is switched off.</summary>
     private CancellationTokenSource? cts;
 
     private int activeGearsetId = -1;
@@ -126,10 +113,8 @@ public class AutoUpdatePortrait : Tweak {
         return sendBannerDataHook!.Original(helper, data);
     }
 
-    /// <summary>
-    /// Re-equipping the gear set makes the game announce the linked portrait a second time, which reads
-    /// as the portrait having been updated twice. Only the notice after the real update is kept.
-    /// </summary>
+    // Re-equipping the gear set announces the linked portrait a second time, so only the notice after
+    // the real update is kept.
     private void OnLogMessage(ILogMessage message) {
         if (!swallowInstantPortraitNotice || message.LogMessageId is not InstantPortraitNotice) return;
 
@@ -235,7 +220,7 @@ public class AutoUpdatePortrait : Tweak {
 
     private static unsafe uint EquippedChecksum() => UIGlobals.GenerateEquippedItemsChecksum();
 
-    /// <summary>Runs the same steps the preview's confirm button does.</summary>
+    // Runs the same steps the preview's confirm button does.
     private static unsafe Result TryUpdatePortrait(int gearsetId, uint checksum) {
         var log = IPluginLog.Get();
         var gearsetModule = RaptureGearsetModule.Instance();

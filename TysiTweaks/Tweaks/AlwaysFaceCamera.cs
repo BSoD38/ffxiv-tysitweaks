@@ -8,9 +8,7 @@ using TysiTweaks.Ui;
 
 namespace TysiTweaks.Tweaks;
 
-/// <summary>
-/// Port of HaselTweaks' Always Face Camera, with an added camera distance limit.
-/// </summary>
+// Ported from HaselTweaks' Always Face Camera.
 public class AlwaysFaceCamera : Tweak {
     public override string DisplayName => "Always Face Camera";
 
@@ -20,7 +18,7 @@ public class AlwaysFaceCamera : Tweak {
 
     private const ulong NoTarget = 0xE0000000UL;
 
-    /// <summary>The game's own zoom limits, mirrored so the slider covers the whole range.</summary>
+    // The game's own zoom limits.
     private const float MinZoom = 1.5f;
     private const float MaxZoom = 20.0f;
 

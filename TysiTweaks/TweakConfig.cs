@@ -5,9 +5,6 @@ using Dalamud.Plugin.Services;
 
 namespace TysiTweaks;
 
-/// <summary>
-/// Per-tweak settings, stored as {TypeName}.json in the plugin config directory.
-/// </summary>
 public abstract class TweakConfig<T> where T : TweakConfig<T>, new() {
     private static readonly JsonSerializerOptions Options = new() { IncludeFields = true, WriteIndented = true };
 
