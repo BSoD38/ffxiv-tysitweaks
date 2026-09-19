@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+!packages.lock.json
+
+# TRIPWIRE: a TysiTweaks.json beside the csproj silently replaces every manifest property in it.
+TysiTweaks/TysiTweaks.json
+TysiTweaks/TysiTweaks.yaml

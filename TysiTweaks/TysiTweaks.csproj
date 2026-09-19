@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
+
+  <!-- DalamudPackager takes json > yaml > csproj, first hit wins with no merge: a TysiTweaks.json beside this file
+       would silently replace every property below. -->
+  <PropertyGroup>
+    <Version>0.2.1.0</Version>
+    <Author>BSoD38</Author>
+    <Name>TysiTweaks</Name>
+    <Punchline>A personal collection of quality of life tweaks.</Punchline>
+    <Description>Small quality of life tweaks, each one individually toggleable. Configured through a native game window.</Description>
+    <Tags>ui;tweaks;qol</Tags>
+    <RepoUrl>https://github.com/BSoD38/ffxiv-tysitweaks</RepoUrl>
+    <IconUrl>https://raw.githubusercontent.com/BSoD38/ffxiv-tysitweaks/main/TysiTweaks/images/icon.png</IconUrl>
+    <AcceptsFeedback>false</AcceptsFeedback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="KamiToolKit" Version="2.2.42" />
+    <None Include="images/**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
